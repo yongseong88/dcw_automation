@@ -60,11 +60,6 @@ class CanVasPage(BasePage):
 
   def drawing_drag(self, x, y):
     # 캔버스 내 300셀에 drawing 하는 시나리오
-    # 드로잉 시작점 설정
-    # start_x = 560  # 캔버스 첫 칸의 x 좌표
-    # end_x = 1390 # 캔버스 마지막 칸의 x 좌표
-    # start_y = 408  # 캔버스 첫 칸의 y 좌표
-    # end_y = 964 # 캔버스 마지막 칸의 y 좌표
 
     xran_step = random.randrange(1, 60)
     yran_step = random.randrange(1, 40)

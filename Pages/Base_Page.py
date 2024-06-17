@@ -58,14 +58,6 @@ class BasePage:
 
       element.send_keys(value)
 
-  # def random_number(self, lst):
-  #     ran_num = random.randrange(0, len(lst))
-  #     return ran_num
-  #
-  # def list_shuffle(self, lst):
-  #     random.shuffle(lst)
-  #     return lst
-
   def get_title(self):
       return self.driver.title
 
