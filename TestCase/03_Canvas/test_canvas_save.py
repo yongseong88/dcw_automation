@@ -200,7 +200,7 @@ class TestCanvasfilesave(BaseTest):
             # time.sleep(2)
 
 
-    def tesot_canvas_fildadd_root_save(self, base_url):
+    def tesot_canvas_fileadd_root_save(self, base_url):
 
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -288,7 +288,7 @@ class TestCanvasfilesave(BaseTest):
             print(f"AssertionError: {e}")
             canvas_page.screenshot_capture()
 
-    def tesot_canvas_fildadd_folder_save(self, base_url):
+    def tesot_canvas_fileadd_folder_save(self, base_url):
 
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -299,8 +299,8 @@ class TestCanvasfilesave(BaseTest):
             input_multiline = multi_line()
             page_max = len(input_multiline)  # 페이지 최대 수
 
-            start_x = 555  # 캔버스 첫 칸의 x 좌표
-            start_y = 405  # 캔버스 첫 칸의 y 좌표
+            start_x = 585  # 캔버스 첫 칸의 x 좌표
+            start_y = 425  # 캔버스 첫 칸의 y 좌표
 
             self.canvas_login(base_url)
             main_page.canvas_btn_click()
@@ -343,16 +343,17 @@ class TestCanvasfilesave(BaseTest):
             canvas_page.add_btn_click()
             time.sleep(5)
             canvas_page.file_open("folder")
-            time.sleep(3)
+            time.sleep(7)
 
             canvas_page.save_btn_click()
             time.sleep(5)
             canvas_page.save_set(today + "automation_file")
             time.sleep(1)
             canvas_page.save_confirm_btn_click()
-            time.sleep(7)
+            time.sleep(30)
 
             save_name = canvas_page.save_filename()
+            time.sleep(8)
 
             print(f"save_name: {save_name}")
 
@@ -369,6 +370,60 @@ class TestCanvasfilesave(BaseTest):
 
             assert save_http_status.status_code <= 200, "DTMS save failed"
 
+
+        except AssertionError as e:
+            print(f"AssertionError: {e}")
+            canvas_page.screenshot_capture()
+
+    def tesot_canvas_drawing(self, base_url):
+
+        main_page = MainPage(self.driver)
+        canvas_page = CanVasPage(self.driver)
+
+        try:
+            input_multiline = multi_line()
+            page_max = len(input_multiline)  # 페이지 최대 수
+
+            start_x = 585  # 캔버스 첫 칸의 x 좌표
+            start_y = 425  # 캔버스 첫 칸의 y 좌표
+
+            self.canvas_login(base_url)
+            main_page.canvas_btn_click()
+            time.sleep(1)
+
+            print("\r\n추가 할 페이지 수: {}".format(page_max - 1))
+
+            for pg in range(page_max):
+                scroll_y_location = canvas_page.scroll_location()
+
+                if pg > 0:
+                    if scroll_y_location == 8:
+                        start_y = (start_y - 20)
+
+                    canvas_page.page_add_btn_click()
+
+                    match len(input_multiline):
+                        case length if length > pg:
+                            canvas_page.drawing_tool(start_x, start_y)
+                            print(f"멀티라인 입력 가능 길이: {len(input_multiline)}")
+                            canvas_page.description_input(input_multiline[pg])
+                            print(f"멀티라인 입력 텍스트: {input_multiline[pg]}")
+                            print("페이지 정보: {} / {}".format(pg + 1, page_max))
+                            time.sleep(2)
+
+                        case length if length < pg:
+                            canvas_page.drawing_tool(start_x, start_y)
+                            print("입력 가능 한 멀티라인 텍스트가 없어요.")
+                            print("페이지 정보: {} / {}".format(pg + 1, page_max))
+                            time.sleep(2)
+
+                else:
+                    canvas_page.drawing_tool(start_x, start_y)
+                    print(f"멀티라인 입력 가능 길이: {len(input_multiline)}")
+                    canvas_page.description_input(input_multiline[pg])
+                    print(f"멀티라인 입력 텍스트: {input_multiline[pg]}")
+                    print("페이지 정보: {} / {}".format(pg + 1, page_max))
+                    time.sleep(2)
 
         except AssertionError as e:
             print(f"AssertionError: {e}")

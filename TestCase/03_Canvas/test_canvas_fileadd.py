@@ -27,7 +27,7 @@ class TestCanvasfileopen(BaseTest):
         except AssertionError as e:
             print(f"AssertionError: {e}")
 
-    def tesot_canvas_add_popup(self, base_url):
+    def test_canvas_add_popup(self, base_url):
         # MainPage, CanVasPage 인스턴스 생성
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -35,11 +35,8 @@ class TestCanvasfileopen(BaseTest):
 
         try:
             self.canvas_login(base_url)
-            time.sleep(1)
             main_page.canvas_btn_click()
-            time.sleep(1)
             canvas_page.add_btn_click()
-            time.sleep(5)
 
             add_popup_http_status = drive_api.filebrowser_list_api(base_url, 'ROOT')
             print(f"\r\nadd_popup Status Code: {add_popup_http_status.status_code}")
@@ -49,22 +46,7 @@ class TestCanvasfileopen(BaseTest):
             print(f"AssertionError: {e}")
             canvas_page.screenshot_capture()
 
-
-    # def tesot_canvas_add_cancel(self):
-    #     # MainPage, CanVasPage 인스턴스 생성
-    #     main_page = MainPage(self.driver)
-    #     canvas_page = CanVasPage(self.driver)
-    #
-    #     self.canvas_login()
-    #     time.sleep(1)
-    #     main_page.canvas_btn_click()
-    #     time.sleep(1)
-    #     canvas_page.add_btn_click()
-    #     time.sleep(5)
-    #     canvas_page.filebrowser_cancel_btn_click()
-    #     time.sleep(2)
-    #
-    def tesot_canvas_root_file_add(self, base_url):
+    def tesot_canvas_DTMS_add_root(self, base_url):
         # MainPage, CanVasPage 인스턴스 생성
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -77,11 +59,13 @@ class TestCanvasfileopen(BaseTest):
             time.sleep(1)
 
             canvas_page.add_btn_click()
+            time.sleep(4)
+            root_file_add = canvas_page.file_click("file", "DTMS", base_url)
             time.sleep(5)
-            root_file_open = canvas_page.file_open("file")
-            time.sleep(3)
+            canvas_page.filebrowser_confirm_btn_click()
+            time.sleep(5)
 
-            root_file_key = drive_api.file_key_search(base_url, root_file_open)
+            root_file_key = drive_api.file_key_search(base_url, root_file_add)
             file_open_confirm_http_status = drive_api.file_open_api(base_url, root_file_key)
 
             print(f"\r\nStatus Code: {file_open_confirm_http_status.status_code}")
@@ -91,7 +75,8 @@ class TestCanvasfileopen(BaseTest):
             print(f"AssertionError: {e}")
             canvas_page.screenshot_capture()
 
-    def tesot_canvas_folder_file_add(self, base_url):
+
+    def tesot_canvas_DTMA_add_root(self, base_url):
         # MainPage, CanVasPage 인스턴스 생성
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -102,12 +87,73 @@ class TestCanvasfileopen(BaseTest):
             time.sleep(1)
             main_page.canvas_btn_click()
             time.sleep(1)
+
+            canvas_page.add_btn_click()
+            time.sleep(4)
+            root_file_add = canvas_page.file_click("file", "DTMA", base_url)
+            time.sleep(5)
+            canvas_page.filebrowser_confirm_btn_click()
+            time.sleep(5)
+
+            root_file_key = drive_api.file_key_search(base_url, root_file_add)
+            file_open_confirm_http_status = drive_api.file_open_api(base_url, root_file_key)
+
+            print(f"\r\nStatus Code: {file_open_confirm_http_status.status_code}")
+            assert file_open_confirm_http_status.status_code == 200, "FileOpen failed"
+
+        except AssertionError as e:
+            print(f"AssertionError: {e}")
+            canvas_page.screenshot_capture()
+
+
+    def tesot_canvas_DTMS_add_folder(self, base_url):
+        # MainPage, CanVasPage 인스턴스 생성
+        main_page = MainPage(self.driver)
+        canvas_page = CanVasPage(self.driver)
+        drive_api = Drive_api(base_url)
+
+        try:
+            self.canvas_login(base_url)
+            time.sleep(1)
+            main_page.canvas_btn_click()
+            time.sleep(1)
+
             canvas_page.add_btn_click()
             time.sleep(5)
-            folder_name, folder_in_file_name = canvas_page.file_open("folder")
-            time.sleep(3)
+            file_name = canvas_page.file_click("folder", "DTMS", base_url)
+            time.sleep(8)
+            canvas_page.filebrowser_confirm_btn_click()
+            time.sleep(8)
 
-            folder_key, folder_in_file_key = drive_api.file_key_search(base_url, folder_name, folder_in_file_name)
+            folder_key, folder_in_file_key = drive_api.file_key_search(base_url, file_name[0], file_name[1])
+            file_open_confirm_http_status = drive_api.file_open_api(base_url, folder_in_file_key)
+            print(f"\r\nStatus Code: {file_open_confirm_http_status.status_code}")
+            assert file_open_confirm_http_status.status_code == 200, "FileOpen failed"
+
+        except AssertionError as e:
+            print(f"AssertionError: {e}")
+            canvas_page.screenshot_capture()
+
+    def tesot_canvas_DTMA_add_folder(self, base_url):
+        # MainPage, CanVasPage 인스턴스 생성
+        main_page = MainPage(self.driver)
+        canvas_page = CanVasPage(self.driver)
+        drive_api = Drive_api(base_url)
+
+        try:
+            self.canvas_login(base_url)
+            time.sleep(1)
+            main_page.canvas_btn_click()
+            time.sleep(1)
+
+            canvas_page.add_btn_click()
+            time.sleep(5)
+            file_name = canvas_page.file_click("folder", "DTMA", base_url)
+            time.sleep(8)
+            canvas_page.filebrowser_confirm_btn_click()
+            time.sleep(8)
+
+            folder_key, folder_in_file_key = drive_api.file_key_search(base_url, file_name[0], file_name[1])
             file_open_confirm_http_status = drive_api.file_open_api(base_url, folder_in_file_key)
             print(f"\r\nStatus Code: {file_open_confirm_http_status.status_code}")
             assert file_open_confirm_http_status.status_code == 200, "FileOpen failed"

@@ -54,7 +54,7 @@ class TestCanvasfileopen(BaseTest):
             print(f"AssertionError: {e}")
             canvas_page.screenshot_capture()
 
-    def tesot_canvas_root_file_open(self, base_url):
+    def tesot_canvas_DTMS_open_root(self, base_url):
         # MainPage, CanVasPage 인스턴스 생성
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -62,12 +62,15 @@ class TestCanvasfileopen(BaseTest):
 
         try:
             self.canvas_login(base_url)
+            time.sleep(1)
             main_page.canvas_btn_click()
             time.sleep(1)
+
             canvas_page.open_btn_click()
             time.sleep(5)
-
-            root_file_open = canvas_page.file_open("file")
+            root_file_open = canvas_page.file_click("file", "DTMS", base_url)
+            time.sleep(8)
+            canvas_page.filebrowser_confirm_btn_click()
             time.sleep(8)
 
             root_file_key = drive_api.file_key_search(base_url, root_file_open)
@@ -79,7 +82,8 @@ class TestCanvasfileopen(BaseTest):
             print(f"AssertionError: {e}")
             canvas_page.screenshot_capture()
 
-    def tesot_canvas_folder_file_open(self, base_url):
+
+    def tesot_canvas_DTMA_open_root(self, base_url):
         # MainPage, CanVasPage 인스턴스 생성
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -87,16 +91,47 @@ class TestCanvasfileopen(BaseTest):
 
         try:
             self.canvas_login(base_url)
+            time.sleep(1)
             main_page.canvas_btn_click()
             time.sleep(1)
+
             canvas_page.open_btn_click()
             time.sleep(5)
-
-            folder_name, folder_in_file_name = canvas_page.file_open("folder")
+            root_file_open = canvas_page.file_click("file", "DTMA", base_url)
+            time.sleep(8)
+            canvas_page.filebrowser_confirm_btn_click()
             time.sleep(8)
 
-            folder_key, folder_in_file_key = drive_api.file_key_search(base_url, folder_name, folder_in_file_name)
-            file_open_confirm_http_status = drive_api.file_open_api(base_url, folder_in_file_key)
+            root_file_key = drive_api.file_key_search(base_url, root_file_open)
+            file_open_confirm_http_status = drive_api.file_open_api(base_url, root_file_key)
+            print(f"\r\nStatus Code: {file_open_confirm_http_status.status_code}")
+            assert file_open_confirm_http_status.status_code == 200, "FileOpen failed"
+
+        except AssertionError as e:
+            print(f"AssertionError: {e}")
+            canvas_page.screenshot_capture()
+
+    def tesot_canvas_DTMS_open_folder(self, base_url):
+        # MainPage, CanVasPage 인스턴스 생성
+        main_page = MainPage(self.driver)
+        canvas_page = CanVasPage(self.driver)
+        drive_api = Drive_api(base_url)
+
+        try:
+            self.canvas_login(base_url)
+            time.sleep(1)
+            main_page.canvas_btn_click()
+            time.sleep(1)
+
+            canvas_page.open_btn_click()
+            time.sleep(5)
+            file_name = canvas_page.file_click("folder", "DTMS", base_url)
+            time.sleep(8)
+            canvas_page.filebrowser_confirm_btn_click()
+            time.sleep(8)
+
+            file_key = drive_api.file_key_search(base_url, file_name[0], file_name[1])
+            file_open_confirm_http_status = drive_api.file_open_api(base_url, file_key[1])
             print(f"\r\nStatus Code: {file_open_confirm_http_status.status_code}")
 
             assert file_open_confirm_http_status.status_code == 200, "FileOpen failed"
@@ -105,19 +140,49 @@ class TestCanvasfileopen(BaseTest):
             print(f"AssertionError: {e}")
             canvas_page.screenshot_capture()
 
-    # def tesot_canvas_open_cancel(self):
-    #     # MainPage, CanVasPage 인스턴스 생성
-    #     main_page = MainPage(self.driver)
-    #     canvas_page = CanVasPage(self.driver)
-    #
-    #     self.canvas_login()
-    #     main_page.canvas_btn_click()
-    #     time.sleep(1)
-    #     canvas_page.open_btn_click()
-    #     time.sleep(1)
-    #     canvas_page.filebrowser_cancel_btn_click()
-    #     time.sleep(2)
-    #
+    def tesot_canvas_DTMA_open_folder(self, base_url):
+        # MainPage, CanVasPage 인스턴스 생성
+        main_page = MainPage(self.driver)
+        canvas_page = CanVasPage(self.driver)
+        drive_api = Drive_api(base_url)
+
+        try:
+            self.canvas_login(base_url)
+            time.sleep(1)
+            main_page.canvas_btn_click()
+            time.sleep(1)
+
+            canvas_page.open_btn_click()
+            time.sleep(5)
+            file_name = canvas_page.file_click("folder", "DTMA", base_url)
+            time.sleep(8)
+            canvas_page.filebrowser_confirm_btn_click()
+            time.sleep(8)
+
+            file_key = drive_api.file_key_search(base_url, file_name[0], file_name[1])
+            file_open_confirm_http_status = drive_api.file_open_api(base_url, file_key[1])
+            print(f"\r\nStatus Code: {file_open_confirm_http_status.status_code}")
+
+            assert file_open_confirm_http_status.status_code == 200, "FileOpen failed"
+
+        except AssertionError as e:
+            print(f"AssertionError: {e}")
+            canvas_page.screenshot_capture()
+
+    def tesot_canvas_open_cancel(self):
+
+        # MainPage, CanVasPage 인스턴스 생성
+        main_page = MainPage(self.driver)
+        canvas_page = CanVasPage(self.driver)
+
+        self.canvas_login()
+        main_page.canvas_btn_click()
+        time.sleep(1)
+        canvas_page.open_btn_click()
+        time.sleep(1)
+        canvas_page.filebrowser_cancel_btn_click()
+        time.sleep(2)
+
     def tesot_canvas_edit_root_file_open(self, base_url):
         # MainPage, CanVasPage 인스턴스 생성
         main_page = MainPage(self.driver)
@@ -175,7 +240,7 @@ class TestCanvasfileopen(BaseTest):
             canvas_page.open_btn_click()
             canvas_page.edit_save_cancel()
             time.sleep(5)
-            root_file_open = canvas_page.file_open("file")
+            root_file_open = canvas_page.file_click("file")
             time.sleep(8)
 
             root_file_key = drive_api.file_key_search(base_url, root_file_open)
@@ -241,7 +306,7 @@ class TestCanvasfileopen(BaseTest):
             canvas_page.open_btn_click()
             canvas_page.edit_save_cancel()
             time.sleep(5)
-            folder_name, folder_in_file_name = canvas_page.file_open("folder")
+            folder_name, folder_in_file_name = canvas_page.file_click("folder")
             time.sleep(8)
 
             folder_key, folder_in_file_key = drive_api.file_key_search(base_url, folder_name, folder_in_file_name)
@@ -252,7 +317,7 @@ class TestCanvasfileopen(BaseTest):
         except AssertionError as e:
             print(f"AssertionError: {e}")
             canvas_page.screenshot_capture()
-    #
+
     # def tesot_canvas_file_scroll(self):
     #     # MainPage, CanVasPage 인스턴스 생성
     #     main_page = MainPage(self.driver)

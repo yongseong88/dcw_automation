@@ -41,97 +41,162 @@ class CanVasPage(BasePage):
   def filebrowser_cancel_btn_click(self):
     self.click(self.locate.cancel_btn)
 
+
+  def file_format(self, base_url, file_path, format):
+    try:
+      drive_api = Drive_api(base_url)
+      filelist_json = drive_api.filebrowser_list_api(base_url, 'ROOT').json()
+
+      for key in filelist_json:
+        if type(filelist_json[key]) is list:
+          random.shuffle(filelist_json[key])
+
+          # print("\r\n" + f'{"출력 결과":=^78}')
+          # print("파일의 총 갯수는 {}개 입니다.".format(len(file_list)))
+
+          for item in filelist_json[key]:
+            # DTMS 파일 값 리턴
+            if file_path == "file" and format == "DTMS" and 'audioPath' in item['DTMS_JSON'] and item['DTMS_JSON']['audioPath'] == "":
+              return item['FILE_NAME']
+
+            # DTMA 파일 값 리턴
+            elif file_path == "file" and format == "DTMA" and 'audioPath' in item['DTMS_JSON'] and item['DTMS_JSON']['audioPath'] != "":
+              return item['FILE_NAME']
+
+            elif file_path == "folder" and 'G' in item['FILE_KEY'] and item["FILE_COUNT"] != "0":
+              folder_json = drive_api.filebrowser_list_api(base_url, item['FILE_KEY']).json()
+
+              # 폴더 내 파일 클릭 했을 때의 status 값
+              for key in folder_json:
+                if type(folder_json[key]) is list:
+                  random.shuffle(folder_json[key])
+
+                  for folder_in_item in folder_json[key]:
+
+                    if format == "DTMS" and 'audioPath' in folder_in_item['DTMS_JSON'] and folder_in_item['DTMS_JSON']['audioPath'] == "":
+                      print(f"\r\n폴더명: {item['FILE_NAME']}")
+                      print(f"파일명: {folder_in_item['FILE_NAME']}")
+                      return item['FILE_NAME'], folder_in_item['FILE_NAME']
+
+                    elif format == "DTMA" and 'audioPath' in folder_in_item['DTMS_JSON'] and folder_in_item['DTMS_JSON']['audioPath'] != "":
+                      print(f"\r\n폴더명: {item['FILE_NAME']}")
+                      print(f"파일명: {folder_in_item['FILE_NAME']}")
+                      return item['FILE_NAME'], folder_in_item['FILE_NAME']
+
+                    else:
+                      pass
+
+    except Exception as e:
+      print(f"\n에러가 발생했습니다: {e}")
+      print("다시 시도합니다.\n")
+      time.sleep(3)  # 오류 발생 후 대기
+
+
   # 파일 브라우저 내 열기/추가 파일 가져오기
-    # file_type에 따라 ROOT 또는 폴더 내 파일 가져오기
-  def file_open(self, file_type):
+  # file_type에 따라 ROOT 또는 폴더 내 파일 가져오기
 
-    file_name = None
-    folder_name = None
-    folder_in_file_name = None
+  def file_click(self, file_type, file_format, base_url):
 
-    match file_type:
-      case "file":
-        file_list = self.get_elements(self.locate.file_list)
-        random_file = random.choice(file_list)
+    try:
+      match file_type:
+        case "file":
+          file_list = self.get_elements(self.locate.file_list)
+          file_format_name = self.file_format(base_url, file_type, file_format)
 
-        print("\r\n" + f'{"출력 결과":=^78}')
-        print("파일의 총 갯수는 {}개 입니다.".format(len(file_list)))
+          print(f'\r\n{"출력 결과":=^78}')
+          print("파일의 총 갯수는 {}개 입니다.".format(len(file_list)))
 
-        match len(file_list):
-          case 0:
-            print("파일이 없습니다.")
-            pass
+          for hwail in file_list:
+            if hwail.text == file_format_name:
+              hwail.click()
+              dtms_file_name = hwail.text
+              print(f"클릭한 파일명(DTMS): {dtms_file_name}")
+              return dtms_file_name
 
-          case 1:
-            file_list[0].click()  # 폴더 내 임의의 파일 클릭
-            file_name = file_list[0].text
-            print("클릭한 파일명 : {}".format(file_name))
+            elif hwail.text == file_format_name:
+              hwail.click()
+              dtma_file_name = hwail.text
+              print(f"클릭한 파일명(DTMA): {dtma_file_name}")
+              return dtma_file_name
 
-          case _:
-            random_file.click()  # 폴더 내 임의의 파일 클릭
-            file_name = random_file.text
-            print("클릭한 파일명 : {}".format(file_name))
+        case "folder":
 
-        time.sleep(5)
-        self.filebrowser_confirm_btn_click()
-        return file_name
+          folder_list = self.get_elements(self.locate.folder_list)
+          folder_format_name = self.file_format(base_url, file_type, file_format)
 
-      case "folder":
-        folder_list = self.get_elements(self.locate.folder_list)
+          # 유효성 검증
+          if not folder_format_name or len(folder_format_name) < 2:
+            raise ValueError("file_format 함수가 유효한 값을 반환하지 못했습니다.")
+          if not folder_list:
+            raise ValueError("folder_list가 비어 있습니다.")
 
-        print("\r\n" + f'{"출력 결과":=^78}')
-        print("폴더의 총 갯수는 {}개 입니다.".format(len(folder_list)))
+          print(f'\r\n{"출력 결과":=^78}')
+          print(f"폴더의 총 갯수는 {len(folder_list)}개 입니다.")
+          print(f"folder_format_name[0]: {folder_format_name[0]}")
+          print(f"folder_format_name[1]: {folder_format_name[1]}")
 
-        # random_folder = random.choice(folder_list)
-        random.shuffle(folder_list)  # // 폴더 리스트 무작위 섞기
+          for hourda in folder_list:  # // 파일이 있는 폴더 클릭 후 파일 선택
+            # if hourda.text.find("0 items") == -1:  # 파일 갯수가 0개가 아니라면 해당 로직 진행
+            folder_name = hourda.find_element(By.CSS_SELECTOR, self.locate.click_folder_name).text  # 클릭한 폴더명 추출
 
-        try:
-          for fl in folder_list:  # // 파일이 있는 폴더 클릭 후 파일 선택
-            if fl.text.find("0 items") == -1:  # 파일 갯수가 0개가 아니라면 해당 로직 진행
-              random.shuffle(folder_list)
-              # random_folder = random.choice(folder_list)
-              # random_folder.click()  # 폴더 클릭
-              fl.click()
-              folder_name = fl.find_element(By.CSS_SELECTOR, self.locate.click_folder_name).text  # 클릭한 폴더명 추출
-              folder_item = fl.find_element(By.CSS_SELECTOR, self.locate.click_folder_items).text  # 클릭한 폴더 내 파일 갯수 추출
-              print("폴더 네임: {}".format(folder_name))
-              print("아이템 갯수: {}".format(folder_item))
-              time.sleep(7)
+            if folder_name == folder_format_name[0]:  # return 받은 폴더명과 리스트에 있는 폴더명 일치 여부 확인
+              hourda.click() # 일치하는 폴더 클릭
+              click_folder_name = hourda.find_element(By.CSS_SELECTOR, self.locate.click_folder_name).text  # 클릭한 폴더명 추출
+              click_folder_item = hourda.find_element(By.CSS_SELECTOR, self.locate.click_folder_items).text  # 클릭한 폴더 파일 갯수 추출
+              print("폴더 네임: {}".format(click_folder_name))
+              print("아이템 갯수: {}".format(click_folder_item))
+              time.sleep(8)
 
-              folder_in_file_list = self.get_elements(self.locate.file_list)  # 폴더 내 보유 한 파일 리스트 추출
+            else:
+              # print("조건을 만족하지 않는 폴더입니다. 다음으로 진행합니다.")
+              continue
 
-              random_foder_in_file = random.choice(folder_in_file_list)
+            folder_in_file_list = self.get_elements(self.locate.file_list)  # 폴더 내 보유 한 파일 리스트 추출
+            random.shuffle(folder_in_file_list)
+
+            for folder_in_hwail in folder_in_file_list:
+              folder_in_filename = folder_in_hwail.text
+              print(f"현재 파일명: {folder_in_filename}")
+
+              if folder_in_filename == folder_format_name[1]:
+                folder_in_hwail.click()
+                print(f"클릭한 파일명: {folder_in_filename}")
+                print(f"리턴 할 DTMS 폴더명: {click_folder_name}")
+                print(f"리턴 할 DTMS 파일: {folder_in_filename}")
+                return click_folder_name, folder_in_filename
+
+              else:
+                # print(f"{folder_in_hwail.text}은 DTMA 파일이 아닙니다.")
+                pass
+
+          # 모든 폴더 탐색 후 조건 만족 파일이 없는 경우
+          raise ValueError("모든 폴더를 탐색했지만 조건을 만족하는 파일을 찾을 수 없습니다.")
+
+    except StaleElementReferenceException:
+      pass
+
+    except Exception as e:
+      print(f"에러가 발생했습니다: {e}")
+      print("다시 시도합니다.\n")
+      time.sleep(3)  # 오류 발생 후 대기
+
+              #random_foder_in_file = random.choice(folder_in_file_list)
               # random.shuffle(folder_in_file_list)  # 폴더 내 보유 한 파일 리스트 무작위 섞기
               # ran_num = random.randrange(0, len(folder_in_file_list))  # // 폴더 내 파일의 총 갯수 중 임의 숫자 설정
 
-              match len(folder_in_file_list):
-                case 0:
-                  print("파일이 없습니다.")
-                case 1:
-                  folder_in_file_list[0].click()  # 폴더 내 임의의 파일 클릭
-                  folder_in_file_name = folder_in_file_list[0].text
-                  print("클릭한 파일명 : {}".format(folder_in_file_name))
-                case _:
-                  random_foder_in_file.click()  # 폴더 내 임의의 파일 클릭
-                  folder_in_file_name = random_foder_in_file.text
-                  print("클릭한 파일명 : {}".format(folder_in_file_name))
-              break
+              # match folder_in_file_list:
+              #   case _ if folder_format_name[1] in folder_in_file_list and file_format == "DTMS":
+              #       folder_in_file_list.click()
+              #       print(f"클릭한 파일명: {folder_format_name[1].text}")
+              #
+              #   case _ if folder_format_name[1] in folder_in_file_list and file_format == "DTMA":
+              #     print("파일이 없습니다 : {}".format(folder_in_file_name))
+              #
+              #   case _:
+              #    print("파일이 없습니다 ")
 
-            else:
-              print("클릭 할 폴더가 없습니다.")
-
-        except StaleElementReferenceException:
-          pass
-
-        time.sleep(5)
-        self.filebrowser_confirm_btn_click()
-        return folder_name, folder_in_file_name
-
-      case _:
-        print("실행 불가능 합니다")
-        pass
-
-  def folder_open(self):
+  # 폴더 열기
+  def folder_click(self):
 
     folder_name = None
 
@@ -228,32 +293,69 @@ class CanVasPage(BasePage):
   def drawing_click(self, x, y):
     self.mouse_click(x, y)
 
+  def generate_random_coordinates(self, x_start, y_start, x_limit, y_limit, count, steps):
+    coordinates = []
+
+    try:
+      for _ in range(count):
+        if x_start > x_limit or y_start > y_limit:
+          raise ValueError(f"Invalid range: x_start={x_start}, x_limit={x_limit}, y_start={y_start}, y_limit={y_limit}")
+
+        x_random = random.randrange(x_start, x_limit + 1, steps)
+        y_random = random.randrange(y_start, y_limit + 1, steps)
+        coordinates.append((x_random, y_random))
+
+    except ValueError as e:
+      print(f"Error generating coordinates: {e}")
+
+    return coordinates
+
   # 300셀 드래그 동작
   def drawing_drag(self, x, y):
     # 캔버스 내 300셀에 drawing 하는 시나리오
 
-    DTMS_X = random.randrange(1, 61)
-    DTMS_Y = random.randrange(1, 41)
-    coordinate_arr = []
+    # cell_X = random.randrange(1, 60)
+    # cell_Y = random.randrange(1, 40)
 
-    for i in range(2):
-      coordinate_arr.append([])
-      for coo_xy in range(1):
-          x_ran_num = random.randrange(x, int((x + (13.78 * DTMS_X))) + 1, 15)
-          y_ran_num = random.randrange(y, int((y + (13.75 * DTMS_Y))) + 1, 15)
+    x_limit = int(x + (13.41 * 60))
+    # x_limit = int((23.64 * DTMS_X))
+    y_limit = int(y + (13.75 * 40))
+    # y_limit = int((24.01 * DTMS_Y))
 
-          coordinate_arr[i].append(x_ran_num)
-          coordinate_arr[i].append(y_ran_num)
+    coordinates = self.generate_random_coordinates(x, y, x_limit, y_limit, steps=15, count=2)
 
-    for cnt in range(len(coordinate_arr)):
-      coo_x, coo_y = coordinate_arr[cnt]
-      if cnt == 0:
+    print(f"x_limit: {x_limit}")
+    print(f"y_limit: {y_limit}")
+    print(f"coordinates: {coordinates}")
+
+    for idx, (coo_x, coo_y) in enumerate(coordinates):
+      if idx == 0:
         self.mouse_click(coo_x, coo_y)
-        time.sleep(2)
       else:
         self.mouse_drag(coo_x, coo_y)
-      print(coo_x, coo_y)
+      print(f"Action performed at ({coo_x}, {coo_y})")
       time.sleep(2)
+
+    # coordinate_arr = []
+    #
+    # for i in range(2):
+    #   coordinate_arr.append([])
+    #   for coo_xy in range(1):
+    #       x_ran_num = random.randrange(x, int((x + (13.78 * DTMS_X))) + 1, 15)
+    #       y_ran_num = random.randrange(y, int((y + (13.75 * DTMS_Y))) + 1, 15)
+    #
+    #       coordinate_arr[i].append(x_ran_num)
+    #       coordinate_arr[i].append(y_ran_num)
+    #
+    # for cnt in range(len(coordinate_arr)):
+    #   coo_x, coo_y = coordinate_arr[cnt]
+    #   if cnt == 0:
+    #     self.mouse_click(coo_x, coo_y)
+    #     time.sleep(2)
+    #   else:
+    #     self.mouse_drag(coo_x, coo_y)
+    #   print(coo_x, coo_y)
+    #   time.sleep(2)
 
   # undo 버튼 클릭
   def undo_btn_click(self):

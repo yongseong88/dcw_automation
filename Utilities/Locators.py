@@ -132,11 +132,13 @@ class cloud_LocatorFields:  # CanVas 페이지 내 요소
 
     # 닷 클라우드
     # cloud_file_list = (By.CLASS_NAME, "grid-table")
-    cloud_file_list = (By.CLASS_NAME, "grid-cell")
-    # cloud_file_list = (By.CSS_SELECTOR, "#gridTable > tr")
-    # click_cloud_folder_name = "#gridTable > tr > td > div > div > p.card-title.text-center.text-truncate.text-wrap.mb-0 > span.text-ellipsis"
-    # click_cloud_folder_items = "#gridTable > tr > td > div > div > p.card-text.text-center"
-    # file_list = (By.CLASS_NAME, "file")
-    cloud_file_name = "#gridTable > tr > td > div > div > p > span.text-ellipsis"
-    cloud_file_date = "#gridTable > tr > td > div > div > p.card-text.text-center"
+    cloud_file_list = (By.CLASS_NAME, "grid-cell") # 닷 클라우드 파일 전체 리스트
+    cloud_file_name = "#gridTable > tr > td > div > div > p > span.text-ellipsis" # 파일명, 폴더명
+    cloud_file_date = "#gridTable > tr > td > div > div > p.card-text.text-center" # 파일 생성일자, 폴더 갯수
+    cloud_page_btn = (By.CSS_SELECTOR, "#app > div.p-2.rounded-4 > div:nth-child(2) > div.d-flex.m-1.px-3.rounded-pill.align-items-center.justify-content-center > nav > ol > li")
+    cloud_page_selected_btn = (By.CSS_SELECTOR, "button[class='selected']")
+    cloud_context_presentation_btn = (By.CSS_SELECTOR, "# app > div.p-2.rounded-4 > div:nth-child(2) > div.dropdown > ul > li:nth-child(1) > button")
+    cloud_context_open_btn = (By.CSS_SELECTOR, "#app > div.p-2.rounded-4 > div:nth-child(2) > div.dropdown > ul > li:nth-child(2) > button")
 
+
+    # By.CSS_SELECTOR, 'input[tabindex="12"]'

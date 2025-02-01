@@ -8,14 +8,6 @@ from Utilities.json_util import User_api
 @pytest.mark.usefixtures("initialize_driver", "base_url")
 class TestLogin(BaseTest):
 
-  # user_info
-  # dev_id = readConfig("Account", "dev_id")
-  # dev_pwd = readConfig("Account", "dev_password")
-  # prod_id = readConfig("Account", "prod_id")
-  # prod_pwd = readConfig("Account", "prod_password")
-  # invalid_id = readConfig("Account", "invalid_id")
-  # invalid_pwd = readConfig("Account", "invalid_pwd")
-
   def account_config(self, base_url):
 
     try:
@@ -34,7 +26,7 @@ class TestLogin(BaseTest):
 
 
   @pytest.mark.order(1)
-  def tesot_login_success(self, base_url):
+  def test_login_success(self, base_url):
 
     main_page = MainPage(self.driver)
     login_page = LoginPage(self.driver)
@@ -60,7 +52,7 @@ class TestLogin(BaseTest):
       login_page.screenshot_capture()
 
   @pytest.mark.order(2)
-  def tesot_login_id_failure(self, base_url):
+  def test_login_id_failure(self, base_url):
 
     main_page = MainPage(self.driver)
     login_page = LoginPage(self.driver)
@@ -86,7 +78,7 @@ class TestLogin(BaseTest):
       login_page.screenshot_capture()
 
   @pytest.mark.order(3)
-  def tesot_login_pwd_failure(self, base_url):
+  def test_login_pwd_failure(self, base_url):
 
     main_page = MainPage(self.driver)
     login_page = LoginPage(self.driver)

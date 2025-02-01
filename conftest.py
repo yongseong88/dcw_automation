@@ -3,11 +3,8 @@ import pytest
 from selenium import webdriver
 import datetime
 import os
-
-
 # from seleniumwire import webdriver
-
-# webdriver-manager 패키지 섪치
+# webdriver-manager 패키지 설치
 # from webdriver_manager.chrome import ChromeDriverManager 라이브러리 호출
 # from selenium.webdriver.chrome.service import Service 라이브러리 호출
 
@@ -54,7 +51,6 @@ def initialize_driver(request, base_url):
 
     driver = webdriver.Chrome(options=chrome_options)
 
-    # driver.get("https://dev-apps.dotincorp.com")
     driver.get(base_url)
 
     # 테스트 클래스에 드라이버 설정

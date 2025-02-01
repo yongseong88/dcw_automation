@@ -13,24 +13,26 @@ class BasePage:
 
   def get_element(self, locator):
 
-      element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((locator)))
+      element = WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((locator)))
+      # element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((locator)))
 
       return element
 
   def get_elements(self, locator):
-      element = WebDriverWait(self.driver, 20).until(EC.visibility_of_all_elements_located((locator)))
+      element = WebDriverWait(self.driver, 30).until(EC.presence_of_all_elements_located((locator)))
+      # element = WebDriverWait(self.driver, 20).until(EC.visibility_of_all_elements_located((locator)))
 
       return element
 
   def click(self, locator):
       try:
-          element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((locator)))
+          element = WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((locator)))
 
           element.click()
 
       except StaleElementReferenceException:
 
-          element = WebDriverWait(self.driver, 20).until(EC.visibility_of_element_located((locator)))
+          element = WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((locator)))
 
           element.click()
 
@@ -39,10 +41,15 @@ class BasePage:
 
       actions.double_click(locator).perform()
 
+  def context_click(self, locator):
+      actions = ActionChains(self.driver)
+
+      actions.context_click(locator).perform()
+
 
   def get_text(self, locator):
-      element = WebDriverWait(self.driver, 20).until(
-          EC.visibility_of_element_located(
+      element = WebDriverWait(self.driver, 30).until(
+          EC.presence_of_element_located(
               (locator))
       )
 
@@ -51,9 +58,9 @@ class BasePage:
 
   def get_aria_label(self, locator):
       try:
-          element = WebDriverWait(self.driver, 25).until(
-              EC.visibility_of_element_located((locator))
-              # EC.presence_of_element_located((locator))
+          element = WebDriverWait(self.driver, 30).until(
+              # EC.visibility_of_element_located((locator))
+              EC.presence_of_element_located((locator))
           )
 
           label = element.get_attribute("aria-label")
@@ -80,10 +87,12 @@ class BasePage:
       self.driver.implicitly_wait(3)
       pyautogui.moveTo(x, y, duration=1)
       pyautogui.click(x, y, duration=2)
+      print(f"Mouse click at ({x}, {y})")
 
   def mouse_drag(self, x, y):
       self.driver.implicitly_wait(3)
       pyautogui.dragTo(x, y, duration=3, button='left')
+      print(f"Mouse drag to ({x}, {y})")
 
   def key_input(self, value):
       pyautogui.press(value)

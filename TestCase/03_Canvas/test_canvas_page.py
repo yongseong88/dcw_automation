@@ -1,16 +1,11 @@
 import time
-from random import random
-
 import pytest
-
 from TestCase.base_test import BaseTest
 from Pages.Canvas_Page import CanVasPage
 from Pages.Login_page import LoginPage
 from Pages.Main_Page import MainPage
 from Utilities.File_util import multi_line
 from Utilities.configreaderutil import readConfig
-import random
-
 from Utilities.json_util import Braille_api
 
 
@@ -69,7 +64,7 @@ class TestCanvasfileadministration(BaseTest):
 
         assert canvas_page.page_max_label() == "최대 100페이지까지 가능합니다.", "failed"
 
-    def test_canvas_page_multiline(self, base_url):
+    def tesot_canvas_page_multiline(self, base_url):
         # MainPage, CanVasPage 인스턴스 생성
         main_page = MainPage(self.driver)
         canvas_page = CanVasPage(self.driver)
@@ -115,23 +110,3 @@ class TestCanvasfileadministration(BaseTest):
               assert multiline_input_http_status.status_code == 200, "multiline input Failed"
 
         print("총 페이지 수는 {0} 입니다".format(page_max))
-
-#
-#     def tesot_canvas_multiline(self):
-#         # MainPage, CanVasPage 인스턴스 생성
-#         main_page = MainPage(self.driver)
-#         canvas_page = CanVasPage(self.driver)
-#
-#         input_text = "양지은"
-#
-#         self.canvas_login()
-#         time.sleep(1)
-#         main_page.canvas_btn_click()
-#         time.sleep(5)
-#
-#         # canvas_page.page_add_btn_click()
-#         canvas_page.description_input(input_text)
-#
-#         multiline_input_http_status = multiline_api(input_text)
-#         print(f"\r\nStatus Code: {multiline_input_http_status.status_code}")
-#         assert multiline_input_http_status.status_code == 200, "multiline input Failed"
